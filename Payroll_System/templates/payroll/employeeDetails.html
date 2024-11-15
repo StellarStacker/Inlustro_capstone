@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .btn, .back-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #00796b;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .back-btn {
+            background-color: #004d40;
+            margin-top: 20px;
+        }
+        .btn:hover, .back-btn:hover {
+            background-color: #004d40;
+        }
+        .employee-details {
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-radius: 8px;
+        }
+    </style>
+    <!-- Include jsPDF library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Include jsPDF autoTable plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.24/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Employee Details</h1>
+
+        <div class="employee-details">
+            <h3>Employee Info</h3>
+            <p><strong>Name:</strong> <span id="empName"></span></p>
+            <p><strong>Role:</strong> <span id="empRole"></span></p>
+            <p><strong>Hourly Rate:</strong> $<span id="empHourlyRate"></span></p>
+            <p><strong>Hours Worked:</strong> <span id="empHoursWorked"></span></p>
+            <p><strong>Salary:</strong> $<span id="empSalary"></span></p>
+
+            <a href="#" id="generatePayslipBtn" class="btn" onclick="generatePayslip()">Generate Payslip</a>
+        </div>
+
+        <a href="dashboard.html" class="back-btn">Back to Dashboard</a>
+    </div>
+
+    <script>
+        // Retrieve employee data from localStorage
+        const emp = JSON.parse(localStorage.getItem("selectedEmployee"));
+
+        if (!emp) {
+            alert("No employee selected.");
+            window.location.href = "dashboard.html";  // Redirect back to the dashboard if no employee is selected
+        }
+
+        // Display employee details on the page
+        document.getElementById("empName").textContent = emp.name;
+        document.getElementById("empRole").textContent = emp.role;
+        document.getElementById("empHourlyRate").textContent = emp.hourlyRate.toFixed(2);
+        document.getElementById("empHoursWorked").textContent = emp.hoursWorked.toFixed(2);
+        document.getElementById("empSalary").textContent = (emp.hourlyRate * emp.hoursWorked).toFixed(2);
+
+        // Function to generate payslip
+        function generatePayslip() {
+            const { jsPDF } = window.jspdf; // Destructure to get jsPDF
+            const doc = new jsPDF(); // Create a new jsPDF instance
+
+            // Title and Date
+            const date = new Date();
+            const month = date.toLocaleString('default', { month: 'long' });
+            const year = date.getFullYear();
+            doc.text("SALARY SLIP", 20, 10); // Title
+            doc.text(`${month} ${year}`, 150, 10); // Date
+
+            // Employee Info
+            doc.text(`Name: ${emp.name}`, 20, 20);
+            doc.text(`Employee ID: N/A`, 20, 30);
+            doc.text(`Title: ${emp.role}`, 20, 40);
+            doc.text("Directorate: Operations", 20, 50); // Static text for demonstration
+            doc.text("Department: General Affairs", 20, 60); // Static text for demonstration
+
+            // Earnings and Deductions
+            const headers = ["Description", "Earnings ($)", "Deductions ($)"];
+            const earnings = [
+                { description: "Basic Salary", amount: (emp.hourlyRate * emp.hoursWorked).toFixed(2) },
+                { description: "Meal Allowance", amount: "300.00" },
+                { description: "Transportation Allowance", amount: "300.00" },
+                { description: "Medical Allowance", amount: "300.00" }
+            ];
+            const deductions = [
+                { description: "Retirement Insurance", amount: "25.00" },
+                { description: "Tax", amount: "25.00" }
+            ];
+
+            let tableData = [];
+            earnings.forEach(item => {
+                tableData.push([item.description, item.amount, ""]);
+            });
+            deductions.forEach(item => {
+                tableData.push([item.description, "", item.amount]);
+            });
+
+            // Draw Table
+            doc.autoTable({
+                head: [headers],
+                body: tableData,
+                startY: 70, // Start position of the table
+                theme: 'grid',
+                styles: {
+                    fontSize: 10,
+                    cellPadding: 2,
+                    overflow: 'linebreak'
+                },
+                columnStyles: {
+                    0: { cellWidth: 'auto' },  // Description column width
+                    1: { halign: 'right' },    // Right align Earnings
+                    2: { halign: 'right' }     // Right align Deductions
+                }
+            });
+
+            // Calculate Totals
+            const totalEarnings = earnings.reduce((total, item) => total + parseFloat(item.amount), 0);
+            const totalDeductions = deductions.reduce((total, item) => total + parseFloat(item.amount), 0);
+
+            // Total row
+            doc.text("Total", 20, doc.lastAutoTable.finalY + 10);
+            doc.text(`$${totalEarnings.toFixed(2)}`, 120, doc.lastAutoTable.finalY + 10);
+            doc.text(`$${totalDeductions.toFixed(2)}`, 170, doc.lastAutoTable.finalY + 10);
+
+            // Payment Information
+            doc.text("Payment Date: January 28, 2017", 20, doc.lastAutoTable.finalY + 20);
+            doc.text("Bank Name: Bank of America", 20, doc.lastAutoTable.finalY + 30);
+
+            // Net Pay Calculation
+            const netPay = totalEarnings - totalDeductions;
+            doc.text(`NET PAY: $${netPay.toFixed(2)}`, 20, doc.lastAutoTable.finalY + 40);
+
+            // Save the document
+            doc.save(`${emp.name}_Payslip.pdf`);
+        }
+    </script>
+
+</body>
+</html>

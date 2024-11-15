@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Payroll Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+        }
+        .employee-category {
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #f4f4f4;
+            border-radius: 8px;
+        }
+        .employee-category h2 {
+            margin: 0;
+            font-size: 1.5em;
+            background-color: #00796b;
+            color: white;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        .employee-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .employee-list li {
+            padding: 8px;
+            margin: 6px 0;
+            background-color: #e0f7fa;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .employee-list li:hover {
+            background-color: #00796b;
+            color: white;
+        }
+        #searchBar {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        .back-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #00796b;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+        .back-btn:hover {
+            background-color: #004d40;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Admin Payroll Dashboard</h1>
+        <a href="login.html" class="back-btn">Back to Login</a>
+
+        <input type="text" id="searchBar" placeholder="Search by name or role..." oninput="searchEmployees()">
+
+        <!-- Employee Categories -->
+        <div class="employee-category" id="manager-category">
+            <h2>Managers</h2>
+            <ul class="employee-list">
+                <!-- List of Managers will be injected here -->
+            </ul>
+        </div>
+
+        <div class="employee-category" id="staff-category">
+            <h2>Staff</h2>
+            <ul class="employee-list">
+                <!-- List of Staff will be injected here -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is authenticated
+        if (!localStorage.getItem('isAuthenticated')) {
+            window.location.href = 'login.html'; // Redirect to login if not authenticated
+        }
+
+        const employees = [
+            { name: "John Doe", role: "Manager", hourlyRate: 50, hoursWorked: 40 },
+            { name: "Jane Smith", role: "Manager", hourlyRate: 55, hoursWorked: 45 },
+            { name: "Mike Johnson", role: "Staff", hourlyRate: 30, hoursWorked: 38 },
+            { name: "Emily Davis", role: "Staff", hourlyRate: 28, hoursWorked: 42 }
+        ];
+
+        // Display employees by role
+        function displayEmployeesByRole() {
+            const managerCategory = document.getElementById("manager-category").querySelector(".employee-list");
+            const staffCategory = document.getElementById("staff-category").querySelector(".employee-list");
+
+            // Clear current lists
+            managerCategory.innerHTML = '';
+            staffCategory.innerHTML = '';
+
+            // Loop through employees and categorize them by role
+            employees.forEach(emp => {
+                const listItem = document.createElement("li");
+                listItem.textContent = emp.name;
+                listItem.onclick = function() {
+                    localStorage.setItem("selectedEmployee", JSON.stringify(emp));
+                    window.location.href = "employeeDetails.html"; // Navigate to details page
+                };
+
+                // Add to appropriate category based on role
+                if (emp.role === "Manager") {
+                    managerCategory.appendChild(listItem);
+                } else if (emp.role === "Staff") {
+                    staffCategory.appendChild(listItem);
+                }
+            });
+        }
+
+        // Search employees by name or role
+        function searchEmployees() {
+            const searchTerm = document.getElementById("searchBar").value.toLowerCase();
+            const managerCategory = document.getElementById("manager-category").querySelector(".employee-list");
+            const staffCategory = document.getElementById("staff-category").querySelector(".employee-list");
+
+            // Filter employees based on search term
+            const filteredEmployees = employees.filter(emp => emp.name.toLowerCase().includes(searchTerm) || emp.role.toLowerCase().includes(searchTerm));
+            managerCategory.innerHTML = '';
+            staffCategory.innerHTML = '';
+
+            filteredEmployees.forEach(emp => {
+                const listItem = document.createElement("li");
+                listItem.textContent = emp.name;
+                listItem.onclick = function() {
+                    localStorage.setItem("selectedEmployee", JSON.stringify(emp));
+                    window.location.href = "employeeDetails.html";
+                };
+                if (emp.role === "Manager") {
+                    managerCategory.appendChild(listItem);
+                } else {
+                    staffCategory.appendChild(listItem);
+                }
+            });
+        }
+
+        // Call display function to show the employee list
+        displayEmployeesByRole();
+    </script>
+
+</body>
+</html>

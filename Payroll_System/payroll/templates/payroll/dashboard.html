@@ -77,25 +77,20 @@
         <!-- Employee Categories -->
         <div class="employee-category" id="manager-category">
             <h2>Managers</h2>
-            <ul class="employee-list">
+            <ul class="employee-list" id="manager-list">
                 <!-- List of Managers will be injected here -->
             </ul>
         </div>
 
         <div class="employee-category" id="staff-category">
             <h2>Staff</h2>
-            <ul class="employee-list">
+            <ul class="employee-list" id="staff-list">
                 <!-- List of Staff will be injected here -->
             </ul>
         </div>
     </div>
 
     <script>
-        // Check if user is authenticated
-        if (!localStorage.getItem('isAuthenticated')) {
-            window.location.href = 'login.html'; // Redirect to login if not authenticated
-        }
-
         const employees = [
             { name: "John Doe", role: "Manager", hourlyRate: 50, hoursWorked: 40 },
             { name: "Jane Smith", role: "Manager", hourlyRate: 55, hoursWorked: 45 },
@@ -105,8 +100,8 @@
 
         // Display employees by role
         function displayEmployeesByRole() {
-            const managerCategory = document.getElementById("manager-category").querySelector(".employee-list");
-            const staffCategory = document.getElementById("staff-category").querySelector(".employee-list");
+            const managerCategory = document.getElementById("manager-list");
+            const staffCategory = document.getElementById("staff-list");
 
             // Clear current lists
             managerCategory.innerHTML = '';
@@ -133,8 +128,8 @@
         // Search employees by name or role
         function searchEmployees() {
             const searchTerm = document.getElementById("searchBar").value.toLowerCase();
-            const managerCategory = document.getElementById("manager-category").querySelector(".employee-list");
-            const staffCategory = document.getElementById("staff-category").querySelector(".employee-list");
+            const managerCategory = document.getElementById("manager-list");
+            const staffCategory = document.getElementById("staff-list");
 
             // Filter employees based on search term
             const filteredEmployees = employees.filter(emp => emp.name.toLowerCase().includes(searchTerm) || emp.role.toLowerCase().includes(searchTerm));

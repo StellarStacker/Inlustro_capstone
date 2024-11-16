@@ -28,6 +28,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+LOGIN_REDIRECT_URL = 'index/dashboard/'  # Redirect to dashboard after login
+  # Or the correct path to the login view
 
 # Application definition
 

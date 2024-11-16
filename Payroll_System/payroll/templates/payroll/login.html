@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -119,35 +120,28 @@
         <h1>Admin Login</h1>
         <p>Enter your credentials to access the payroll system.</p>
 
-        <div class="input-group">
-            <input type="text" id="username" placeholder="Username" required>
-        </div>
+        <!-- Form submits directly to the Django backend -->
+        <form method="POST">
+            {% csrf_token %}
+            <div class="input-group">
+                <input type="text" id="username" name="username" placeholder="Username" required>
+            </div>
 
-        <div class="input-group">
-            <input type="password" id="password" placeholder="Password" required>
-        </div>
+            <div class="input-group">
+                <input type="password" id="password" name="password" placeholder="Password" required>
+            </div>
 
-        <button class="btn" onclick="authenticate()">Login</button>
+            <button type="submit" class="btn">Login</button>
+        </form>
+
+        {% if error %}
+            <div class="error" style="color: red;">{{ error }}</div>
+        {% endif %}
 
         <div class="footer">
             <p>Don't have an account? <a href="#">Sign Up</a></p>
         </div>
     </div>
-
-    <script>
-        // Simple authentication function
-        function authenticate() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-
-            if (username === 'admin' && password === 'admin') {
-                alert('Login successful!');
-                window.location.href = 'dashboard.html'; // Redirect to dashboard
-            } else {
-                alert('Invalid credentials! Please try again.');
-            }
-        }
-    </script>
 
 </body>
 </html>

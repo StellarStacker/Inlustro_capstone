@@ -1,10 +1,12 @@
-# Payroll_System/urls.py
-
 from django.contrib import admin
-from django.urls import path, include  # include is necessary to include app-specific URLs
+from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('login/', include('django.contrib.auth.urls')),  # Default login URL
-    path('payslip/', include('payroll.urls')),  # Include the 'payroll' app URLs
+    path('', include('payroll.urls')),
+    path('login/', include('payroll.urls')),
+    # Ensure 'your_app_name' is correct
+    path('payslip/', include('payroll.urls')),
+    path('index/dashboard/', include('payroll.urls')),
+     # This line maps the root path to your app
 ]

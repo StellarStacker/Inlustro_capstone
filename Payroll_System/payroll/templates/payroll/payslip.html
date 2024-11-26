@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Details</title>
+    <title>Employee Payslip</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,7 +16,12 @@
             max-width: 1000px;
             margin: 0 auto;
         }
-        .btn, .back-btn {
+        .employee-details {
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .btn {
             display: inline-block;
             padding: 10px 20px;
             background-color: #00796b;
@@ -26,22 +31,19 @@
             cursor: pointer;
         }
         .back-btn {
+            display: inline-block;
+            padding: 10px 20px;
             background-color: #004d40;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
             margin-top: 20px;
         }
-        .btn:hover, .back-btn:hover {
-            background-color: #004d40;
-        }
-        .employee-details {
-            background-color: #f4f4f4;
-            padding: 20px;
-            border-radius: 8px;
-        }
     </style>
-    <!-- Include jsPDF library -->
+    <!-- Include jsPDF Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- Include jsPDF autoTable plugin -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.24/jspdf.plugin.autotable.min.js"></script>
+    <!-- Include autoTable Plugin for jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.22/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 
@@ -54,6 +56,7 @@
             <p><strong>Role:</strong> <span id="empRole"></span></p>
             <p><strong>Hourly Rate:</strong> $<span id="empHourlyRate"></span></p>
             <p><strong>Hours Worked:</strong> <span id="empHoursWorked"></span></p>
+            <p><strong>Overtime Hours:</strong> <input type="number" id="empOvertimeHours" placeholder="Overtime Hours" min="0"></p>
             <p><strong>Salary:</strong> $<span id="empSalary"></span></p>
 
             <a href="#" id="generatePayslipBtn" class="btn" onclick="generatePayslip()">Generate Payslip</a>
@@ -83,6 +86,9 @@
             const { jsPDF } = window.jspdf; // Destructure to get jsPDF
             const doc = new jsPDF(); // Create a new jsPDF instance
 
+            const overtimeHours = parseFloat(document.getElementById("empOvertimeHours").value) || 0;
+            const overtimePay = overtimeHours * emp.hourlyRate * 1.5; // Assuming overtime is paid at 1.5x the hourly rate
+
             // Title and Date
             const date = new Date();
             const month = date.toLocaleString('default', { month: 'long' });
@@ -90,68 +96,88 @@
             doc.text("SALARY SLIP", 20, 10); // Title
             doc.text(`${month} ${year}`, 150, 10); // Date
 
-            // Employee Info
-            doc.text(`Name: ${emp.name}`, 20, 20);
-            doc.text(`Employee ID: N/A`, 20, 30);
-            doc.text(`Title: ${emp.role}`, 20, 40);
-            doc.text("Directorate: Operations", 20, 50); // Static text for demonstration
-            doc.text("Department: General Affairs", 20, 60); // Static text for demonstration
+            // Employee Info Table
+            doc.autoTable({
+                head: [['Employee Information']],
+                body: [
+                    [`Name: ${emp.name}`],
+                    [`Role: ${emp.role}`],
+                    [`Hourly Rate: $${emp.hourlyRate.toFixed(2)}`],
+                    [`Hours Worked: ${emp.hoursWorked.toFixed(2)}`],
+                    [`Salary: $${(emp.hourlyRate * emp.hoursWorked).toFixed(2)}`]
+                ],
+                startY: 30,
+                theme: 'grid',
+                styles: {
+                    fontSize: 10,
+                    cellPadding: 5
+                },
+                margin: { top: 10 }
+            });
 
-            // Earnings and Deductions
-            const headers = ["Description", "Earnings ($)", "Deductions ($)"];
+            // Earnings Table
             const earnings = [
                 { description: "Basic Salary", amount: (emp.hourlyRate * emp.hoursWorked).toFixed(2) },
+                { description: "Overtime Pay", amount: overtimePay.toFixed(2) },
                 { description: "Meal Allowance", amount: "300.00" },
                 { description: "Transportation Allowance", amount: "300.00" },
                 { description: "Medical Allowance", amount: "300.00" }
             ];
+
+            const earningsTable = earnings.map(item => [item.description, item.amount]);
+            earningsTable.push(["Total Earnings", (earnings.reduce((total, item) => total + parseFloat(item.amount), 0)).toFixed(2)]); // Add Total Earnings row
+
+            doc.autoTable({
+                head: [['Earnings', 'Amount']],
+                body: earningsTable,
+                startY: doc.lastAutoTable.finalY + 10,
+                theme: 'grid',
+                styles: {
+                    fontSize: 10,
+                    cellPadding: 5
+                }
+            });
+
+            // Deductions Table
             const deductions = [
                 { description: "Retirement Insurance", amount: "25.00" },
                 { description: "Tax", amount: "25.00" }
             ];
 
-            let tableData = [];
-            earnings.forEach(item => {
-                tableData.push([item.description, item.amount, ""]);
-            });
-            deductions.forEach(item => {
-                tableData.push([item.description, "", item.amount]);
-            });
+            const deductionsTable = deductions.map(item => [item.description, item.amount]);
+            deductionsTable.push(["Total Deductions", (deductions.reduce((total, item) => total + parseFloat(item.amount), 0)).toFixed(2)]); // Add Total Deductions row
 
-            // Draw Table
             doc.autoTable({
-                head: [headers],
-                body: tableData,
-                startY: 70, // Start position of the table
+                head: [['Deductions', 'Amount']],
+                body: deductionsTable,
+                startY: doc.lastAutoTable.finalY + 10,
                 theme: 'grid',
                 styles: {
                     fontSize: 10,
-                    cellPadding: 2,
-                    overflow: 'linebreak'
-                },
-                columnStyles: {
-                    0: { cellWidth: 'auto' },  // Description column width
-                    1: { halign: 'right' },    // Right align Earnings
-                    2: { halign: 'right' }     // Right align Deductions
+                    cellPadding: 5
                 }
             });
 
-            // Calculate Totals
+            // Payment and Net Pay Table (Total Table)
             const totalEarnings = earnings.reduce((total, item) => total + parseFloat(item.amount), 0);
             const totalDeductions = deductions.reduce((total, item) => total + parseFloat(item.amount), 0);
-
-            // Total row
-            doc.text("Total", 20, doc.lastAutoTable.finalY + 10);
-            doc.text(`$${totalEarnings.toFixed(2)}`, 120, doc.lastAutoTable.finalY + 10);
-            doc.text(`$${totalDeductions.toFixed(2)}`, 170, doc.lastAutoTable.finalY + 10);
-
-            // Payment Information
-            doc.text("Payment Date: January 28, 2017", 20, doc.lastAutoTable.finalY + 20);
-            doc.text("Bank Name: Bank of America", 20, doc.lastAutoTable.finalY + 30);
-
-            // Net Pay Calculation
             const netPay = totalEarnings - totalDeductions;
-            doc.text(`NET PAY: $${netPay.toFixed(2)}`, 20, doc.lastAutoTable.finalY + 40);
+
+            const totalTable = [
+                ["Payment Date", "Bank Name", "Net Pay"],
+                [`January 28, 2017`, `Bank of America`, `$${netPay.toFixed(2)}`]
+            ];
+
+            doc.autoTable({
+                head: [['Total Information']],
+                body: totalTable,
+                startY: doc.lastAutoTable.finalY + 10,
+                theme: 'grid',
+                styles: {
+                    fontSize: 10,
+                    cellPadding: 5
+                }
+            });
 
             // Save the document
             doc.save(`${emp.name}_Payslip.pdf`);

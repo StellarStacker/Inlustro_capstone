@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Tasks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f5f7;
+        }
+
+        h1 {
+            text-align: center;
+            color: #00796b;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #00796b;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #00796b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #004d40;
+        }
+
+        .back-btn {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            background-color: #e53935;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .back-btn:hover {
+            background-color: #b71c1c;
+        }
+    </style>
+</head>
+<body>
+    <h1>Assign Tasks</h1>
+
+    <div class="form-container">
+        <label for="task-title">Task Title</label>
+        <input type="text" id="task-title" placeholder="Enter task title">
+
+        <label for="assignee">Assign To</label>
+        <select id="assignee">
+            <option value="">Select Employee</option>
+            <option value="john">John Doe</option>
+            <option value="jane">Jane Smith</option>
+            <option value="mike">Mike Johnson</option>
+        </select>
+
+        <label for="deadline">Deadline</label>
+        <input type="date" id="deadline">
+
+        <label for="description">Task Description</label>
+        <textarea id="description" rows="5" placeholder="Enter task details"></textarea>
+
+        <button onclick="assignTask()">Assign Task</button>
+    </div>
+
+    <a href="manager_dashboard.html" class="back-btn">Back</a>
+
+    <script>
+        function assignTask() {
+            const title = document.getElementById("task-title").value;
+            const assignee = document.getElementById("assignee").value;
+            const deadline = document.getElementById("deadline").value;
+            const description = document.getElementById("description").value;
+
+            if (!title || !assignee || !deadline || !description) {
+                alert("Please fill in all fields!");
+                return;
+            }
+
+            alert(`Task "${title}" assigned to ${assignee} with deadline ${deadline}`);
+            // You can save tasks to a database or localStorage
+        }
+    </script>
+</body>
+</html>

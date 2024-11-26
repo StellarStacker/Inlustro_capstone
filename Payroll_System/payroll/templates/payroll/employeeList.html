@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f5f7;
+        }
+        h1 {
+            text-align: center;
+        }
+        .employee-category {
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #00796b;
+            color: white;
+            border-radius: 5px;
+        }
+        .employee-category h2 {
+            margin: 0;
+            padding: 10px;
+            background-color: #004d40;
+            border-radius: 5px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background-color: #fff;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            color: #00796b; /* Ensures text is visible before hovering */
+            transition: background-color 0.3s, color 0.3s;
+        }
+        li:hover {
+            background-color: #00796b;
+            color: white; /* Changes text color to white on hover */
+        }
+        .back-btn {
+            margin-top: 20px;
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #00796b;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .back-btn:hover {
+            background-color: #004d40;
+        }
+    </style>
+</head>
+<body>
+    <h1>Employee List</h1>
+    
+    <div class="employee-category" id="manager-category">
+        <h2>Managers</h2>
+        <ul id="manager-list">
+            <!-- Manager list will be injected here -->
+        </ul>
+    </div>
+
+    <div class="employee-category" id="staff-category">
+        <h2>Staff</h2>
+        <ul id="staff-list">
+            <!-- Staff list will be injected here -->
+        </ul>
+    </div>
+
+    <a href="dashboard.html" class="back-btn">Back to Dashboard</a>
+
+    <script>
+        // Example employee data
+        const employees = [
+            { name: "John Doe", role: "Manager", hourlyRate: 50, hoursWorked: 40 },
+            { name: "Jane Smith", role: "Manager", hourlyRate: 55, hoursWorked: 45 },
+            { name: "Mike Johnson", role: "Staff", hourlyRate: 30, hoursWorked: 38 },
+            { name: "Emily Davis", role: "Staff", hourlyRate: 28, hoursWorked: 42 }
+        ];
+
+        const managerList = document.getElementById("manager-list");
+        const staffList = document.getElementById("staff-list");
+
+        // Display employee list categorized by role
+        employees.forEach(emp => {
+            const li = document.createElement("li");
+            li.textContent = emp.name;
+            li.onclick = function() {
+                localStorage.setItem("selectedEmployee", JSON.stringify(emp));
+                window.location.href = "payslip.html"; // Navigate to payslip page
+            };
+
+            // Add to appropriate category based on role
+            if (emp.role === "Manager") {
+                managerList.appendChild(li);
+            } else if (emp.role === "Staff") {
+                staffList.appendChild(li);
+            }
+        });
+    </script>
+</body>
+</html>

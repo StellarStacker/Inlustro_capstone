@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f5f7;
+        }
+        h1 {
+            text-align: center;
+        }
+        .report-category {
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #00796b;
+            color: white;
+            border-radius: 5px;
+        }
+        .report-category h2 {
+            margin: 0;
+            padding: 10px;
+            background-color: #004d40;
+            border-radius: 5px;
+        }
+        .report-options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .report-options li {
+            background-color: #ffffff;
+            color: #00796b;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            font-size: 1.1em;
+        }
+        .report-options li:hover {
+            background-color: #00796b;
+            color: white;
+        }
+        .back-btn {
+            margin-top: 20px;
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #00796b;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .back-btn:hover {
+            background-color: #004d40;
+        }
+        .generate-report-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #00796b;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .generate-report-btn:hover {
+            background-color: #004d40;
+        }
+    </style>
+</head>
+<body>
+    <h1>Generate Report</h1>
+
+    <!-- Available Report Categories -->
+    <div class="report-category">
+        <h2>Available Reports</h2>
+        <ul class="report-options" id="report-options">
+            <li onclick="selectReport('employee')">Employee Report</li>
+            <li onclick="selectReport('payroll')">Payroll Report</li>
+            <li onclick="selectReport('task')">Task Completion Report</li>
+        </ul>
+    </div>
+
+    <!-- Report Generation Section -->
+    <div id="report-form" style="display: none;">
+        <h3>Generate <span id="report-type"></span></h3>
+        <label for="date-range">Select Date Range:</label>
+        <input type="text" id="date-range" placeholder="Enter date range (e.g., Jan 2024)">
+        <br><br>
+        <button class="generate-report-btn" onclick="generateReport()">Generate Report</button>
+    </div>
+
+    <a href="dashboard.html" class="back-btn">Back to Dashboard</a>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+
+    <script>
+        // Function to display the report generation form
+        function selectReport(reportType) {
+            const reportForm = document.getElementById("report-form");
+            const reportTypeText = document.getElementById("report-type");
+
+            // Show the report form and update title based on selected report type
+            reportForm.style.display = "block";
+            reportTypeText.textContent = reportType.charAt(0).toUpperCase() + reportType.slice(1) + " Report";
+        }
+
+        // Function to generate the report
+        function generateReport() {
+            const reportType = document.getElementById("report-type").textContent.toLowerCase().replace(" report", "");
+            const dateRange = document.getElementById("date-range").value;
+
+            if (dateRange.trim() === "") {
+                alert("Please enter a date range.");
+                return;
+            }
+
+            // Initialize jsPDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Simulate the data for the report based on selected report type
+            let reportData;
+            if (reportType === "employee") {
+                reportData = [
+                    ["Name", "Role", "Hourly Rate", "Hours Worked"],
+                    ["John Doe", "Manager", "50", "40"],
+                    ["Jane Smith", "Manager", "55", "45"],
+                    ["Mike Johnson", "Staff", "30", "38"],
+                    ["Emily Davis", "Staff", "28", "42"]
+                ];
+            } else if (reportType === "payroll") {
+                reportData = [
+                    ["Name", "Role", "Hourly Rate", "Hours Worked", "Total Pay"],
+                    ["John Doe", "Manager", "50", "40", "2000"],
+                    ["Jane Smith", "Manager", "55", "45", "2475"],
+                    ["Mike Johnson", "Staff", "30", "38", "1140"],
+                    ["Emily Davis", "Staff", "28", "42", "1176"]
+                ];
+            } else if (reportType === "task") {
+                reportData = [
+                    ["Task Name", "Assigned To", "Due Date", "Status"],
+                    ["Task 1", "John Doe", "2024-05-10", "Completed"],
+                    ["Task 2", "Jane Smith", "2024-05-12", "Pending"],
+                    ["Task 3", "Mike Johnson", "2024-05-15", "Completed"],
+                    ["Task 4", "Emily Davis", "2024-05-18", "In Progress"]
+                ];
+            }
+
+            // Add title
+            doc.text(`${reportType.charAt(0).toUpperCase() + reportType.slice(1)} Report`, 14, 10);
+
+            // Use jsPDF AutoTable Plugin to add the report data as a table
+            doc.autoTable({
+                head: reportData.slice(0, 1), // Header
+                body: reportData.slice(1),    // Body
+                startY: 20,                   // Start below the title
+                theme: 'grid',                // Style of table
+            });
+
+            // Save the PDF
+            doc.save(`${reportType}_report_${dateRange}.pdf`);
+
+            // Log to console for demonstration
+            console.log(`Generating ${reportType} report for the date range: ${dateRange}`);
+        }
+    </script>
+</body>
+</html>

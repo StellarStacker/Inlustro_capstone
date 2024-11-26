@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+        }
+        .signup-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .signup-container h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #00796b;
+        }
+        .input-group {
+            width: 100%;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        .input-group input:focus {
+            border-color: #00796b;
+        }
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #00796b;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #004d40;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #777;
+        }
+        .footer a {
+            color: #00796b;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="signup-container">
+        <h1>Create Account</h1>
+
+        <div class="input-group">
+            <input type="text" id="newUsername" placeholder="Username" required>
+        </div>
+        <div class="input-group">
+            <input type="password" id="newPassword" placeholder="Password" required>
+        </div>
+
+        <button class="btn" onclick="signUp()">Sign Up</button>
+
+        <div class="footer">
+            <p>Already have an account? <a href="login.html">Login</a></p>
+        </div>
+    </div>
+
+    <script>
+        function signUp() {
+            const username = document.getElementById('newUsername').value;
+            const password = document.getElementById('newPassword').value;
+
+            if (!username || !password) {
+                alert("Please fill out all fields.");
+                return;
+            }
+
+            // Check if the username already exists
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            if (users.some(user => user.username === username)) {
+                alert("Username already exists. Please choose another one.");
+                return;
+            }
+
+            // Add the new user to localStorage
+            users.push({ username, password });
+            localStorage.setItem('users', JSON.stringify(users));
+            alert("Account created successfully!");
+            window.location.href = 'login.html'; // Redirect to login page
+        }
+    </script>
+
+</body>
+</html>

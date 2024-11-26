@@ -3,157 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Payroll Dashboard</title>
+    <title>Dashboard</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f5f7;
         }
         h1 {
-            text-align: center;
+            color: #00796b;
         }
-        .employee-category {
+        .section {
             margin: 20px 0;
-            padding: 10px;
-            background-color: #f4f4f4;
+            padding: 15px;
             border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-        .employee-category h2 {
-            margin: 0;
-            font-size: 1.5em;
-            background-color: #00796b;
-            color: white;
-            padding: 8px;
-            border-radius: 4px;
-        }
-        .employee-list {
-            list-style-type: none;
-            padding: 0;
-        }
-        .employee-list li {
-            padding: 8px;
-            margin: 6px 0;
-            background-color: #e0f7fa;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .employee-list li:hover {
-            background-color: #00796b;
-            color: white;
-        }
-        #searchBar {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 20px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-        }
-        .back-btn {
-            display: inline-block;
+        .logout-btn {
+            margin-top: 20px;
             padding: 10px 20px;
             background-color: #00796b;
             color: white;
-            border-radius: 4px;
+            border-radius: 5px;
+            cursor: pointer;
             text-decoration: none;
-            margin-top: 20px;
-        }
-        .back-btn:hover {
-            background-color: #004d40;
         }
     </style>
 </head>
 <body>
-
-    <div class="container">
-        <h1>Admin Payroll Dashboard</h1>
-        <a href="login.html" class="back-btn">Back to Login</a>
-
-        <input type="text" id="searchBar" placeholder="Search by name or role..." oninput="searchEmployees()">
-
-        <!-- Employee Categories -->
-        <div class="employee-category" id="manager-category">
-            <h2>Managers</h2>
-            <ul class="employee-list" id="manager-list">
-                <!-- List of Managers will be injected here -->
-            </ul>
-        </div>
-
-        <div class="employee-category" id="staff-category">
-            <h2>Staff</h2>
-            <ul class="employee-list" id="staff-list">
-                <!-- List of Staff will be injected here -->
-            </ul>
-        </div>
+    <h1>Welcome to the Dashboard</h1>
+    <div class="section" id="admin-section" style="display: none;">
+        <h2>Admin Features</h2>
+        <ul>
+            <li>Manage Employees</li>
+            <li>View All Reports</li>
+        </ul>
     </div>
+    <div class="section" id="manager-section" style="display: none;">
+        <h2>Manager Features</h2>
+        <ul>
+            <li>View Team Tasks</li>
+            <li>Generate Reports</li>
+        </ul>
+    </div>
+    <div class="section" id="employee-section" style="display: none;">
+        <h2>Employee Features</h2>
+        <ul>
+            <li>View Payslip</li>
+            <li>View Assigned Tasks</li>
+        </ul>
+    </div>
+    <a href="login.html" class="logout-btn" onclick="logout()">Logout</a>
 
     <script>
-        const employees = [
-            { name: "John Doe", role: "Manager", hourlyRate: 50, hoursWorked: 40 },
-            { name: "Jane Smith", role: "Manager", hourlyRate: 55, hoursWorked: 45 },
-            { name: "Mike Johnson", role: "Staff", hourlyRate: 30, hoursWorked: 38 },
-            { name: "Emily Davis", role: "Staff", hourlyRate: 28, hoursWorked: 42 }
-        ];
-
-        // Display employees by role
-        function displayEmployeesByRole() {
-            const managerCategory = document.getElementById("manager-list");
-            const staffCategory = document.getElementById("staff-list");
-
-            // Clear current lists
-            managerCategory.innerHTML = '';
-            staffCategory.innerHTML = '';
-
-            // Loop through employees and categorize them by role
-            employees.forEach(emp => {
-                const listItem = document.createElement("li");
-                listItem.textContent = emp.name;
-                listItem.onclick = function() {
-                    localStorage.setItem("selectedEmployee", JSON.stringify(emp));
-                    window.location.href = "employeeDetails.html"; // Navigate to details page
-                };
-
-                // Add to appropriate category based on role
-                if (emp.role === "Manager") {
-                    managerCategory.appendChild(listItem);
-                } else if (emp.role === "Staff") {
-                    staffCategory.appendChild(listItem);
-                }
-            });
+        function logout() {
+            sessionStorage.removeItem("loggedInUser");
         }
 
-        // Search employees by name or role
-        function searchEmployees() {
-            const searchTerm = document.getElementById("searchBar").value.toLowerCase();
-            const managerCategory = document.getElementById("manager-list");
-            const staffCategory = document.getElementById("staff-list");
-
-            // Filter employees based on search term
-            const filteredEmployees = employees.filter(emp => emp.name.toLowerCase().includes(searchTerm) || emp.role.toLowerCase().includes(searchTerm));
-            managerCategory.innerHTML = '';
-            staffCategory.innerHTML = '';
-
-            filteredEmployees.forEach(emp => {
-                const listItem = document.createElement("li");
-                listItem.textContent = emp.name;
-                listItem.onclick = function() {
-                    localStorage.setItem("selectedEmployee", JSON.stringify(emp));
-                    window.location.href = "employeeDetails.html";
-                };
-                if (emp.role === "Manager") {
-                    managerCategory.appendChild(listItem);
-                } else {
-                    staffCategory.appendChild(listItem);
-                }
-            });
+        // Show content based on the logged-in user's role
+        const loggedInUser = JSON.parse(sessionStorage.getItem("loggedInUser"));
+        if (!loggedInUser) {
+            alert("Please log in first.");
+            window.location.href = "login.html";
+        } else {
+            document.getElementById(`${loggedInUser.role.toLowerCase()}-section`).style.display = "block";
         }
-
-        // Call display function to show the employee list
-        displayEmployeesByRole();
     </script>
-
 </body>
 </html>

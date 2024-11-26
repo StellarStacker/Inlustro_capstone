@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Tasks</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f5f7;
+        }
+        h1 {
+            text-align: center;
+        }
+        .task-category {
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #00796b;
+            color: white;
+            border-radius: 5px;
+        }
+        .task-category h2 {
+            margin: 0;
+            padding: 10px;
+            background-color: #004d40;
+            border-radius: 5px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background-color: #ffffff;
+            color: #00796b;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            font-size: 1.1em;
+        }
+        li:hover {
+            background-color: #00796b;
+            color: white;
+        }
+        .back-btn {
+            margin-top: 20px;
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #00796b;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .back-btn:hover {
+            background-color: #004d40;
+        }
+        /* Form Style */
+        .task-form {
+            margin-top: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .task-form input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .task-form button {
+            background-color: #00796b;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .task-form button:hover {
+            background-color: #004d40;
+        }
+        .add-task-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #00796b;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .add-task-btn:hover {
+            background-color: #004d40;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pending Tasks</h1>
+
+    <div class="task-category">
+        <h2>Pending Tasks</h2>
+        <ul id="task-list">
+            <!-- Tasks will be injected here -->
+        </ul>
+
+        <!-- Button to show form for adding new task -->
+        <button class="add-task-btn" onclick="showAddTaskForm()">Add New Task</button>
+
+        <!-- Form for adding a new task (hidden initially) -->
+        <div class="task-form" id="task-form" style="display: none;">
+            <h3>Add Task</h3>
+            <input type="text" id="new-task" placeholder="Enter new task">
+            <button onclick="addTask()">Add Task</button>
+        </div>
+    </div>
+
+    <a href="dashboard.html" class="back-btn">Back to Dashboard</a>
+
+    <script>
+        // Example task data (these could be fetched from a database or localStorage)
+        const tasks = [
+            { taskName: "Prepare monthly report", completed: false },
+            { taskName: "Attend team meeting", completed: false },
+            { taskName: "Update payroll details", completed: true }
+        ];
+
+        const taskList = document.getElementById("task-list");
+
+        // Function to display tasks
+        function displayTasks() {
+            taskList.innerHTML = ''; // Clear the current list
+
+            tasks.forEach((task, index) => {
+                const li = document.createElement("li");
+                li.textContent = task.taskName;
+
+                // If the task is completed, mark it
+                if (task.completed) {
+                    li.style.textDecoration = "line-through"; // Strike-through completed tasks
+                }
+
+                // Add click event to toggle task completion
+                li.onclick = function() {
+                    task.completed = !task.completed;
+                    li.style.textDecoration = task.completed ? "line-through" : "none"; // Toggle line-through
+                    // Optionally update task status in localStorage or a backend
+                };
+
+                taskList.appendChild(li);
+            });
+        }
+
+        // Call displayTasks function initially to load existing tasks
+        displayTasks();
+
+        // Function to show the form for adding new task
+        function showAddTaskForm() {
+            document.getElementById("task-form").style.display = "block"; // Show the form
+        }
+
+        // Function to add a new task
+        function addTask() {
+            const taskName = document.getElementById("new-task").value.trim();
+            
+            if (taskName) {
+                tasks.push({ taskName: taskName, completed: false }); // Add new task to tasks array
+                displayTasks(); // Re-display tasks after adding a new one
+                document.getElementById("new-task").value = ''; // Clear input field
+                document.getElementById("task-form").style.display = "none"; // Hide the form after adding the task
+            } else {
+                alert("Please enter a task description.");
+            }
+        }
+    </script>
+</body>
+</html>

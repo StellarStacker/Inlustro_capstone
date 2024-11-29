@@ -19,13 +19,16 @@ def index(request):
         if username == USERNAME and password == PASSWORD:
             # Manually log the user in by setting session data
             request.session['user_logged_in'] = True
-            return redirect('dashboard')  # Redirect to dashboard on successful login
+            return redirect('admin_dashboard')  # Redirect to dashboard on successful login
+
         else:
             return HttpResponse('Invalid credentials', status=401)  # Invalid credentials
 
     return render(request, 'payroll/login.html')  # Render login page
 
 # Dashboard view (accessible after successful login)
+def admin_dashboard(request):
+    return render(request, 'payroll/admin_dashboard.html')
 def dashboard(request):
     if not request.session.get('user_logged_in', False):
         return redirect('index')  # Redirect to login if not authenticated
@@ -39,7 +42,7 @@ def dashboard(request):
     ]
 
     # Render the dashboard template with employee data
-    return render(request, 'payroll/dashboard.html', {'employees': employees})
+    return render(request, 'dashboard.html', {'employees': employees})
 
 # Logout view
 def logout_view(request):
